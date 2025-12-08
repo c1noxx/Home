@@ -7,17 +7,18 @@
     html, body {
         margin: 0;
         height: 100%;
-        overflow: hidden;
         font-family: Arial, sans-serif;
     }
 
-    /* Responsive background fix */
+    /* Responsive background that fills screen */
     body {
+        display: flex;
+        align-items: center;
+        justify-content: center;
         background: #111;
         position: relative;
     }
 
-    /* Makes the image responsive with no black borders */
     body::before {
         content: "";
         position: fixed;
@@ -27,7 +28,7 @@
         background-image: url('pexels-pixabay-358528.jpg');
         background-position: center;
         background-repeat: no-repeat;
-        background-size: cover; /* fills screen with NO borders */
+        background-size: cover; /* fills screen, no black borders */
         z-index: -1;
     }
 
@@ -42,6 +43,8 @@
         -webkit-backdrop-filter: blur(18px) saturate(160%);
         box-shadow: 0 6px 36px rgba(0,0,0,0.12);
         overflow: hidden;
+        display: flex;
+        align-items: center;
     }
 
     input[type="text"] {
