@@ -2,21 +2,26 @@
 <html>
 <head>
 <meta charset="UTF-8">
-<title>Home</title> <!-- Your custom site name -->
+<title>Home</title>
 <style>
-    body {
+    html,body {
+        height: 100%;
         margin: 0;
-        height: 100vh;
+    }
+
+    body {
         display: flex;
         align-items: center;
         justify-content: center;
         font-family: Arial, sans-serif;
 
-        /* Background image */
-        background-image: url('https://windows10spotlight.com/wp-content/uploads/2021/06/f6c8cbcc4d6d854cc60bc164b1ca06ab-1024x576.jpg');
-        background-size: cover;
-        background-position: center;
+        /* local background image (put the image in the same folder as this file) */
+        background-image: url('pexels-pixabay-358528.jpg');
         background-repeat: no-repeat;
+        background-position: center center;
+        /* contain ensures the whole image fits on screen (zoomed out as much as possible) */
+        background-size: contain;
+        background-color: #111; /* fallback if image doesn't load */
     }
 
     .search-container {
@@ -24,45 +29,79 @@
         max-width: 600px;
         min-width: 250px;
         border-radius: 50px;
-        border: 1px solid rgba(255, 255, 255, 0.35);
-        background: rgba(255, 255, 255, 0.05);
-        backdrop-filter: blur(20px) saturate(180%);
-        -webkit-backdrop-filter: blur(20px) saturate(180%);
-        box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1);
+        border: 1px solid rgba(255,255,255,0.32);
+        background: rgba(255,255,255,0.04); /* acrylic, no tint */
+        backdrop-filter: blur(18px) saturate(160%);
+        -webkit-backdrop-filter: blur(18px) saturate(160%);
+        box-shadow: 0 6px 36px rgba(0,0,0,0.12);
         overflow: hidden;
         position: relative;
     }
 
+    /* optional magnifying icon - small and subtle */
+    .search-container::before {
+        content: '🔍';
+        position: absolute;
+        left: 14px;
+        top: 50%;
+        transform: translateY(-50%);
+        font-size: 16px;
+        color: rgba(255,255,255,0.75);
+        pointer-events: none;
+    }
+
+    form {
+        margin: 0;
+    }
+
     input[type="text"] {
         width: 100%;
-        padding: 12px 30px;
-        font-size: 18px;
+        padding: 10px 28px 10px 40px; /* left padding leaves space for icon */
+        font-size: 17px;
         border: none;
         outline: none;
         border-radius: 50px;
-        background: rgba(255, 255, 255, 0.05);
+        background: rgba(255,255,255,0.03); /* keeps it nearly invisible */
         color: #fff;
-
-        /* disable browser saved info look */
-        background-clip: padding-box;
+        box-shadow: inset 0 2px 8px rgba(255,255,255,0.06);
+        transition: background .18s, box-shadow .18s;
+        -webkit-text-fill-color: #fff; /* autofill safety */
     }
 
     input[type="text"]::placeholder {
-        color: rgba(255, 255, 255, 0.6);
+        color: rgba(255,255,255,0.62);
     }
+
+    input[type="text"]:focus {
+        background: rgba(255,255,255,0.045);
+        box-shadow: inset 0 2px 10px rgba(255,255,255,0.08);
+    }
+
+    /* Disable browser autofill colors (Chrome/Edge) and saved suggestions */
+    input:-webkit-autofill,
+    input:-webkit-autofill:hover,
+    input:-webkit-autofill:focus,
+    input:-webkit-autofill:active {
+        -webkit-box-shadow: 0 0 0px 1000px rgba(255,255,255,0.03) inset !important;
+        -webkit-text-fill-color: #fff !important;
+        transition: background-color 5000s ease-in-out 0s;
+    }
+
+    /* prevent the native autocomplete dropdown in some browsers */
+    input[autocomplete="off"] { ime-mode: disabled; }
 </style>
 </head>
 <body>
     <div class="search-container">
-        <form action="https://www.bing.com/search" autocomplete="off"> <!-- disables saved info -->
-            <input 
-                type="text" 
-                name="q" 
+        <form action="https://www.bing.com/search" method="GET" autocomplete="off" role="search">
+            <input
                 id="searchbar"
-                placeholder="Search the web..." 
-                autocomplete="off" 
-                autocorrect="off" 
-                autocapitalize="off" 
+                name="q"
+                type="text"
+                placeholder="Search the web..."
+                autocomplete="off"
+                autocorrect="off"
+                autocapitalize="off"
                 spellcheck="false"
             >
         </form>
@@ -71,12 +110,34 @@
 <script>
     // Focus search bar when pressing '/'
     document.addEventListener('keydown', function(e) {
+        // ignore if typing in an input, textarea or contenteditable already
+        const active = document.activeElement;
+        const isTyping = active && (
+            active.tagName === 'INPUT' ||
+            active.tagName === 'TEXTAREA' ||
+            active.isContentEditable
+        );
+        if (isTyping) return;
+
         if (e.key === '/') {
             e.preventDefault();
-            document.getElementById('searchbar').focus();
+            const sb = document.getElementById('searchbar');
+            if (sb) {
+                sb.focus();
+                // put caret at the end (for some browsers)
+                const len = sb.value.length;
+                sb.setSelectionRange(len, len);
+            }
         }
     });
-</script>
 
+    // Extra: prevent form from suggesting previously submitted values (some browsers)
+    // We also explicitly clear list attribute just in case
+    const sb = document.getElementById('searchbar');
+    if (sb) {
+        sb.setAttribute('autocomplete', 'off');
+        sb.setAttribute('list', '');
+    }
+</script>
 </body>
 </html>
